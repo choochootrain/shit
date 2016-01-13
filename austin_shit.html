@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Austin Shit</title>
+    </head>
+
+    <body>
+        <h1>Austin's dumb bullshit goes here</h1>
+        <a href="index.html">back to shit</a>
+        <p>
+            Put the shit in here
+        </p>
+        <textarea id="input" rows="20" cols="80"></textarea>
+        <button id="submit">Submit the shit</button>
+
+        <br>
+        <p>
+            Shit comes out here
+        </p>
+        <textarea id="output" rows="20" cols="80"></textarea>
+
+        <script type="text/javascript">
+            var MATCHERS = [
+                {
+                    "pattern": /(\d+)i/,
+                    "transform": function(x) { return x + "-iframe"; }
+                },
+                {
+                    "pattern": /(\d+)/,
+                    "transform": function(x) { return x; }
+                }
+            ];
+            document.getElementById("submit").addEventListener('click', function() {
+                var input = document.getElementById("input").value;
+                
+                var lines = input.split("\n").filter(function(x) {
+                    return !!x.trim();
+                });
+
+                if (lines.length % 2 != 0) {
+                    alert("your shit is invalid - not an even number of lines");
+                    return;
+                }
+
+                var data = {};
+                for (var i = 0; i < lines.length; i+=2) {
+                    var title = lines[i];
+                    var fucked = false;
+                    var elements = lines[i+1].split(",");
+                    
+                    var transformed = [];
+                    for (var j = 0; j < elements.length; j++) {
+                        var element = elements[j].trim();
+
+                        for (var k = 0; k < MATCHERS.length; k++) {
+                            var match = element.match(MATCHERS[k].pattern);
+                            if (match) {
+                                transformed.push(MATCHERS[k].transform(match[1]));
+                                break;
+                            }
+                        }
+
+                        if (transformed.length == j + 1) {
+                            continue;
+                        } else {
+                            alert("element " + element + " is invalid you fucked up");
+                            return; 
+                        }
+                    };
+
+                    data[title] = transformed;
+                }
+
+                document.getElementById("output").value = JSON.stringify(data, null, '\t');
+            });
+        </script>
+    </body>
+</html>
