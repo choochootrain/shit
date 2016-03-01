@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title>Austin Shit</title>
+        <title>Austin's Shit</title>
     </head>
 
     <body>
@@ -33,7 +33,7 @@
             ];
             document.getElementById("submit").addEventListener('click', function() {
                 var input = document.getElementById("input").value;
-                
+
                 var lines = input.split("\n").filter(function(x) {
                     return !!x.trim();
                 });
@@ -48,10 +48,17 @@
                     var title = lines[i];
                     var fucked = false;
                     var elements = lines[i+1].split(",");
-                    
+
+                    var hls_version = 4; //default
                     var transformed = [];
                     for (var j = 0; j < elements.length; j++) {
                         var element = elements[j].trim();
+
+                        //17,18,19,20,17i,18i,19i,20i,hls3 should change the hls-version
+                        if (j == elements.length - 1 && element == "hls3") {
+                            hls_version = 3;
+                            continue;
+                        }
 
                         for (var k = 0; k < MATCHERS.length; k++) {
                             var match = element.match(MATCHERS[k].pattern);
@@ -65,11 +72,14 @@
                             continue;
                         } else {
                             alert("element " + element + " is invalid you fucked up");
-                            return; 
+                            return;
                         }
                     };
 
-                    data[title] = transformed;
+                    data[title] = {
+                        "renditions": transformed,
+                        "hls-version": hls_version
+                    };
                 }
 
                 document.getElementById("output").value = JSON.stringify(data, null, '\t');
